@@ -1,0 +1,31 @@
+spring:
+  cloud:
+    function:
+      definition: producer; process; consumer
+    stream:
+      bindings:
+        producer-out-0:
+          destination: process-in-0
+          content-type: application/json
+          binder: kafka
+        consumer-in-0:
+          destination: process-out-0
+          binder: kafka
+          consumer:
+            max-attempts: 3
+            back-off-initial-interval: 1000
+            back-off-max-interval: 10000
+            back-off-multiplier: 2.0
+
+      kafka:
+        binder:
+          brokers: localhost:29092
+        bindings:
+          process-in-0:
+            consumer:
+              enable-dlq: true
+
+event:
+  type: message.dispatch.downstream
+  specVersion: 1.0
+  data-content-type: application/json
